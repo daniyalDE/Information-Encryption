@@ -1,0 +1,65 @@
+function [o] = imencrypt()
+%UNTITLED Summary of this function goes here
+%   Detailed explanation goes here
+i=imread('apples.jpg');
+%i=double(i);
+
+imshow(i,[]);
+j=imread('football.jpg');
+
+%[r c]=size(i);
+%j=imresize(j,[r c]);
+
+%figure,imshow(j,[]);
+
+[r c p]=size(j);
+[r1 c1 p1]=size(i);
+
+com=i;
+
+%CHAOTIC MAPS
+
+disp('This process may take a few mins...');
+for x=1:r
+    for y=1:c
+        for h=1:p
+        a=de2bi(j(x,y,h),8,'left-msb');
+        lb=randi(r1); %CHAOS INDUCTION
+        rb=randi(c1); %CHAOS INDUCTION
+        %ARNOLD CAT MAP
+        lb=mod((2*lb+rb),r1)+1;
+        rb=mod(lb+rb,c1)+1;
+        pb=randi(p1); %CHAOS INDUCTION
+        b=de2bi(i(lb,rb,pb),8,'left-msb');
+        com1=de2bi(com(lb,rb,pb),8,'left-msb');
+        while(com1(5:8)~=b(5:8))
+            pb=pb+1;
+            if(pb==4)
+                pb=1;
+                rb=rb+1;
+                if(rb>c)
+                    rb=1;
+                    lb=lb+1;
+                    if(lb>r)
+                        lb=1;
+                        rb=1;
+                        pb=1;
+                    end
+                end
+            end
+            b=de2bi(i(lb,rb,pb),8,'left-msb');
+            com1=de2bi(com(lb,rb,pb),8,'left-msb');
+        end
+        b(5:8)=a(1:4);
+        i(lb,rb,pb)=bi2de(b); 
+        end
+    end
+end
+
+figure,imshow(i,[]);
+figure,imshow(j,[]);
+o=i;
+
+
+end
+
